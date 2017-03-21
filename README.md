@@ -3,6 +3,7 @@
 ## Prerequisites
 * variables
 * methods
+* iteration
 
 
 ## A Simple Error
@@ -196,7 +197,7 @@ Delete the quotes around the `3` and we're done! Run it again to check that it i
 
 Notice that there was another line of the stack trace, but we didn't look at it. This is very common. Stack traces in the real world are very long, and we only need to read the parts that matter to us - right up until we figure out the problem.
 
-An error message (with a stack trace) in Rails might look something like this:
+An error message (with a stack trace) in Ruby on Rails might look something like this:
 
 
 ```
@@ -227,7 +228,104 @@ There is a lot of information here, and this is not even a very long stack trace
 1. READ. Slowly read the error message to see if you understand it.
 1. READ/compare. If you don't, work through the stack trace, comparing it to your code.
 
+## Exercise 1
 
+Follow the above steps to diagnose and fix the error:
+
+```ruby
+def scout_area(num_scouts)
+  area = 100
+  time_taken = area / num_scouts
+  return "We've scouted the area in only #{time_taken} days!"
+end
+
+def perform_tasks
+  puts send_diplomats(6)
+  puts scout_area(13, 100)
+end
+
+def send_diplomats(num_diplomats)
+  happy_neighbours = num_diplomats / 2
+  return "We have #{happy_neighbours} more happy neighbours."
+end
+
+perform_tasks
+```
+
+## Multiple Errors
+
+So far we've only encountered one error at a time. When we fix it, our code works, and so we know for sure that we've fixed it. But what if you fix an error only to get another error? This is common.
+
+Let's modify Example 2 an see what happens when we run it.
+
+```ruby
+def add_5
+  return num + 5
+end
+
+def get_time
+  new_time = add_5('3')
+  return "The time is #{new_time}"
+end
+
+puts get_time
+```
+
+Run it to get the following error:
+
+```
+example3.rb:1:in `add_5': wrong number of arguments (given 1, expected 0) (ArgumentError)
+	from example3.rb:6:in `get_time'
+	from example3.rb:10:in `<main>'
+```
+
+According to the error, we have provided the wrong number of arguments to the `add_5` method. This could mean one of two things:
+
+  1. We are trying to pass it too many/not enough arguments.
+  1. The method is not set up to accept the right number of arguments.
+
+(1) and (2) are the only two possibilities, and the only way to know is to look at the method itself. In this case, the `add_5` method currently does not take any arguments, but it is attempting to add `5` to the mysterious `num`.
+
+  1. If we modify `get_time` to pass no arguments to `add_5`, `num` is going to throw a `NameError` because it has not been set anywhere.
+    * More importantly, if we consider the *purpose* of `add_5`, it is to add `5` to a number. If we don't pass it a number, it has no idea what to add to!
+  1. If we add a new parameter to `add_5` called `num`, the method has what it needs - a number to add to.
+
+Let's update `add_5` to accept an argument:
+
+```ruby
+def add_5(num)
+  return num + 5
+end
+```
+
+Run the code to double check that this worked...
+
+...to get another error! Let's first zoom out and consider what is *not* an acceptable reaction to this turn of events:
+
+> I tried that, but I just got another error!
+
+The problem with this line of thinking is that it completely ignores what the new error is or where it's happening. Instead, we should be thinking:
+
+> Hmm, did I fail to fix the error, or were there multiple issues in the first place?
+
+or:
+
+> Does this new error indicate that I have made progress?
+
+It turns out that it's very common to be happy to get a new error. It often means you can move on from the first issue and solve a separate issue. We've already seen the solution to this second issue in [Example 2](#example-2). See if you can follow the stack trace again to figure it out without looking at the previous example.
+
+
+## Exercise 2
+
+
+
+
+
+
+
+## Learning the Errors
+
+Sometimes there is an error and you have no idea why. Google the error message!
 
 
 
@@ -240,6 +338,7 @@ There is a lot of information here, and this is not even a very long stack trace
   * KeyError
   * ArgumentError
   * TypeError
+  * unexpected end (or lack thereof)
 
 
 Ideas:
